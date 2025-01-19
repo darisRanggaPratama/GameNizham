@@ -124,7 +124,7 @@ class TornadoVisualizer:
 def load_music_files():
     music_files = []
     for file in os.listdir('.'):
-        if file.endswith('.mp3'):
+        if file.endswith('music.mp3'):
             music_files.append(file)
     return music_files
 
