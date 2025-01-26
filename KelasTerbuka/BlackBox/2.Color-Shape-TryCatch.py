@@ -60,3 +60,22 @@ while running:
 
 # Quit Pygame
 pygame.quit()
+
+# 🔍 Konsep Dasar:
+# • Program ini seperti "kanvas digital" yang membuat gambar-gambar geometri
+# • Menggunakan PyGame untuk membuat tampilan grafis
+
+# 🖼️ Struktur Program:#
+# 1. Persiapan Awal
+# • Memuat library PyGame
+# • Membuat window/layar grafis
+# • Menentukan ukuran layar (800x600 pixel)
+#
+# 2. Warna yang Digunakan
+# • Putih (background)
+# • Merah • Oranye • Cokelat
+
+# 📐 Objek yang Digambar: • 3 Persegi Warna • 3 Lingkaran Warna • 3 Garis Warna
+#
+# 🛡️ Fitur Keamanan: • Menggunakan error handling (try-except) • Mencegah program crash saat ada masalah • Menampilkan pesan error jika terjadi kesalahan
+

@@ -1,0 +1,8 @@
+# config.py
+
+# Game Configuration
+SCREEN_WIDTH = 800
+SCREEN_HEIGHT = 600
+LIGHT_CORAL = (240, 128, 128)
+TANK_SPEED = 5
+BULLET_SPEED = 10

@@ -44,3 +44,34 @@ while running:
 
     # Update the display
     pygame.display.flip()
+
+# Penjelasan Kode PyGame "Color & Shape"
+
+# 🎯 Tujuan Program:
+# • Membuat window grafis sederhana
+# • Menggambar berbagai bentuk geometri
+# • Menampilkan warna-warna menarik
+
+# 🔧 Komponen Utama:
+# • Menggunakan library Pygame
+# • Ukuran window: 800x600 pixel
+# • Warna dasar: Putih
+# • Bentuk yang digambar: Persegi, Lingkaran, Garis
+
+# 🌈 Warna yang Digunakan:
+# • Merah (RED)
+# • Oranye (ORANGE)
+# • Cokelat (BROWN)
+
+# 📦 Proses Utama:#
+# Inisialisasi Pygame
+# Buat window grafis
+# Gambar bentuk-bentuk geometri
+# Tampilkan window
+
+# 🖌️ Objek yang Digambar:
+# • 3 Persegi dengan warna berbeda
+# • 3 Lingkaran dengan warna berbeda
+# • 3 Garis dengan warna berbeda
+#
+# 💡 Kesimpulan: Program ini adalah contoh sederhana untuk memperkenalkan grafis interaktif menggunakan PyGame

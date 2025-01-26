@@ -1,0 +1,30 @@
+Shape   > Square
+        > Rectangle
+        > Triangle
+        > Circle
+
+Deskripsi:
+
+1. Shape: Class dasar yang memiliki atribut umum seperti color dan metode seperti area() dan perimeter().
+2. Square: Menginherit Shape, memiliki atribut side dan mengimplementasikan metode area() dan perimeter().
+3. Rectangle: Menginherit Shape, memiliki atribut width dan height, serta mengimplementasikan metode area() dan perimeter().
+4. Triangle: Menginherit Shape, memiliki atribut base dan height, serta mengimplementasikan metode area().
+5. Circle: Menginherit Shape, memiliki atribut radius, serta mengimplementasikan metode area() dan perimeter().
+
+Flow Chart
+[Start]
+   |
+   v
+[Create Shape Object]
+   |
+   v
+[Choose Shape Type]
+   |
+   v
+[Calculate Area and Perimeter]
+   |
+   v
+[Display Results]
+   |
+   v
+[End]

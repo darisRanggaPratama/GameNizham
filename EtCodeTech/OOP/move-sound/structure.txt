@@ -1,0 +1,12 @@
+Project
+Structure:
+tank_game /
+├── main.py
+├── game_objects.py
+├── game_logic.py
+├── config.py
+└── assets /
+├── tanker64.png
+├── tanker.png
+├── tank - move.mp3
+└── cat.mp3
