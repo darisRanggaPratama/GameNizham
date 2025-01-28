@@ -1,0 +1,122 @@
+Algoritma atau Pseudo Code Game Spacewar (1962)
+Game Spacewar! adalah salah satu game komputer pertama yang dirancang pada tahun 1962 oleh Steve Russell. Game ini dimainkan oleh dua pemain yang mengontrol kapal luar angkasa dengan gravitasi planet di pusat layar. Berikut adalah penjelasan algoritma/pseudo code dari Spacewar:
+
+Komponen Utama dalam Spacewar
+1.Kapal Luar Angkasa (Spaceships):
+1.1.Dua kapal yang dikendalikan pemain.
+1.2.Bisa bergerak: kiri, kanan, atas, bawah diagonal; menembak; dan terkena gravitasi. Ketika bergerak muncul suara pergerakan.
+
+2.Gravitasi Planet:
+2.1.Planet di pusat layar memberikan gaya gravitasi yang mempengaruhi pergerakan kapal.
+
+3.Peluru (Missiles):
+3.1.Kapal dapat menembak peluru untuk menyerang lawan. Setiap menembak muncul suara tembakan.
+
+4.Deteksi Tabrakan:
+4.1.Tabrakan kapal dengan peluru akan menyebabkan "game over" atau reset posisi kapal. Ketika terjadi tabarakan muncul suara tabrakan.
+
+5.Skor
+5.1.Menghitung skor bila peluru tepat mengenai lawan.
+
+Algoritma Game
+Berikut adalah langkah-langkah algoritma dalam game Spacewar:
+
+1.Inisialisasi Game
+1.1.Tetapkan ukuran layar.
+1.2.Tentukan posisi awal kapal dan planet.
+1.3.Atur parameter seperti gravitasi, kecepatan kapal, dan kecepatan peluru.
+1.4.Siapkan sistem kontrol untuk kedua pemain.
+
+2.Loop Game (Game berjalan hingga pemain berhenti)
+2.1.Input Pemain:
+2.1.1.Baca input dari pemain (tombol untuk rotasi, maju, mundur, bergerak diagonal dan menembak).
+
+2.2.Update Posisi Kapal:
+2.2.1.Hitung gaya gravitasi dari planet terhadap setiap kapal.
+2.2.2.Terapkan perubahan posisi kapal berdasarkan kecepatan dan arah (vector physics).
+
+2.3.Update Posisi Peluru:
+2.3.1.Perbarui posisi peluru berdasarkan kecepatan dan arah.
+2.3.2.Hapus peluru jika keluar dari layar.
+
+2.4.Deteksi Tabrakan:
+2.4.1.Periksa apakah kapal bertabrakan dengan kapal lawan.
+2.4.2.Periksa apakah peluru mengenai kapal lawan.
+2.4.3.Jika terjadi tabrakan, lakukan aksi seperti menambah skor, reset kapal, atau efek suara.
+
+2.5.Render Grafis:
+2.5.1.Gambar planet, kapal, peluru, dan skor di layar.
+
+2.6.Atur Kecepatan Frame:
+2.6.1.Sinkronkan kecepatan game dengan timer.
+
+3.Selesai Game
+
+Game selesai jika pemain memutuskan untuk keluar.
+
+Fungsi-Fungsi Utama
+1.Gravitasi Planet. Gaya gravitasi ditambahkan ke arah gerakan kapal berdasarkan jarak dari planet. Rumus Gravitasi: F = G(m1.m2) / r^2
+2.Pergerakan Kapal. Posisi kapal diperbarui berdasarkan vektor kecepatan dan arah rotasi.
+3.Peluru. Peluru bergerak lurus sesuai arah kapal saat ditembakkan.
+4.Tabrakan. Hitungan jarak Euclidean digunakan untuk mendeteksi tabrakan. Rumus jarak Euclidean = d = √[(x2 - x1)2 + (y2 - y1)2]
+
+Pseudo Code Spacewar
+
+INITIALIZE game_window, spaceship1, spaceship2, planet, bullets1, bullets2
+SET gravity_constant, spaceship_speed, bullet_speed, screen_size
+
+WHILE game_running:
+    HANDLE input:
+        IF player1 presses "key left" THEN rotate spaceship1 counterclockwise
+        IF player1 presses "key right" THEN rotate spaceship1 clockwise
+        IF player1 presses "key up" THEN apply forward force to spaceship1
+        IF player1 presses "key down" THEN apply backward force to spaceship1
+        IF player1 presses "shift" THEN apply shoot the enemy
+
+        IF player1 presses "key A" THEN rotate spaceship1 counterclockwise
+        IF player1 presses "key D" THEN rotate spaceship1 clockwise
+        IF player1 presses "key W" THEN apply forward force to spaceship1
+        IF player1 presses "key S" THEN apply backward force to spaceship1
+        IF player1 presses "space" THEN apply shoot the enemy
+
+    UPDATE spaceship positions:
+        FOR each spaceship:
+            CALCULATE gravitational force from planet
+            UPDATE spaceship velocity using gravity and thrust
+            UPDATE spaceship position using velocity
+            WRAP spaceship position around screen if out of bounds
+
+    UPDATE bullets positions:
+        FOR each bullet in bullets1 and bullets2:
+            UPDATE bullet position using velocity
+            REMOVE bullet if out of screen bounds
+
+    DETECT collisions:
+        FOR each bullet in bullets1:
+            IF bullet hits spaceship2 THEN:
+                INCREMENT score of player1
+                RESET spaceship2 position
+                REMOVE bullet
+
+        FOR each bullet in bullets2:
+            IF bullet hits spaceship1 THEN:
+                INCREMENT score of player2
+                RESET spaceship1 position
+                REMOVE bullet
+
+        IF spaceship1 or spaceship2 hits planet THEN:
+            RESET position of the spaceship
+
+    RENDER game objects:
+        DRAW background
+        DRAW planet
+        DRAW spaceship1 and spaceship2
+        DRAW bullets
+        DISPLAY score of both players
+
+    WAIT for next frame
+
+END
+
+
+

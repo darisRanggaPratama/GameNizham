@@ -14,8 +14,8 @@ pg.display.set_caption("Window Basic")
 background = pg.image.load("OOP/picture/background.jpeg")
 
 # Logo/icon
-icon = pg.image.load("OOP/picture/tanker.png")
-pg.display.set_icon(icon)
+logo = pg.image.load("OOP/picture/tanker.png")
+pg.display.set_icon(logo)
 
 # Change the background color
 lightCoral = (240, 128, 128)
@@ -23,9 +23,9 @@ screen.fill(lightCoral)
 
 
 # Image
-def tank(x, y):
-    image = pg.image.load("OOP/picture/tanker64.png")
-    screen.blit(image, (x, y))
+def tank(xa, ya):
+    picture = pg.image.load("OOP/picture/tanker64.png")
+    screen.blit(picture, (xa, ya))
 
 
 # Move the image
@@ -34,17 +34,12 @@ y = 300
 x_point = 0
 y_point = 0
 
+class enemy():
+    def __init__(self):
+        
 
-def tanker(xs, ys):
-    images = pg.image.load("OOP/picture/tankers64.png")
-    screen.blit(images, (xs, ys))
 
 
-# Move the image
-xs = random.randint(0, width)
-ys = random.randint(0, height)
-x_points = 0
-y_points = 0
 
 runs = True
 while runs:
@@ -90,14 +85,7 @@ while runs:
     x = max(0, min(x, width - image.get_width()))
     y = max(0, min(y, height - image.get_height()))
 
-    # Periksa posisi objek
-    images = pg.image.load("OOP/picture/tankers64.png")
-    xs = max(0, min(xs, width - images.get_width()))
-    ys = max(0, min(ys, height - images.get_height()))
 
-    # Display Object
-    tank(x, y)
-    tanker(xs, ys)
 
     # Clear the screen
     screen.fill(lightCoral)
@@ -108,9 +96,9 @@ while runs:
     # Blit the background
     screen.blit(background, (0, 0))
 
-    # Blit the image
-    screen.blit(image, (x, y))
-    screen.blit(images, (xs, ys))
+    # Display Object
+    tank(x, y)
+
 
     pg.display.update()
 

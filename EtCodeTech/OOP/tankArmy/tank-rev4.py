@@ -227,6 +227,7 @@ class GameManager:
 
             if is_destroyed:
                 self.game_over = True
+                pg.mixer.music.set_volume(0)
                 pg.mixer.music.stop()  # Hentikan musik saat game over
 
     def render(self):
@@ -248,6 +249,7 @@ class GameManager:
             game_over_text = self.font.render(winner, True, (255, 0, 0))
             text_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
             self.screen.blit(game_over_text, text_rect)
+
 
         pg.display.flip()
 
