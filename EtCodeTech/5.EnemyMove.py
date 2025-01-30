@@ -8,7 +8,7 @@ pg.init()
 width, height = 800, 600
 screen = pg.display.set_mode((width, height))
 # Window Title
-pg.display.set_caption("Window Basic")
+pg.display.set_caption("Battle tank")
 
 # Background Window
 background = pg.image.load("OOP/picture/background.jpeg")
@@ -34,15 +34,34 @@ y = 300
 x_point = 0
 y_point = 0
 
-class enemy():
+
+# Enemy
+class Enemy:
+    picture = pg.image.load("OOP/picture/tankers64.png")
+
     def __init__(self):
-        
+        self.x = random.randint(0, width - self.picture.get_width())
+        self.y = random.randint(0, height - self.picture.get_height())
+        self.pointx = -0.1
+        self.pointy = 0
+
+    def move(self):
+        self.x += self.pointx
+        self.y += self.pointy
+
+    def draw(self):
+        screen.blit(self.picture, (self.x, self.y))
 
 
-
+enemy_list = []
+for i in range(random.randint(5, 20)):
+    new_enemy = Enemy()
+    enemy_list.append(new_enemy)
 
 runs = True
 while runs:
+    # Blit the background
+    screen.blit(background, (0, 0))
     # Loop
     for event in pg.event.get():
         if event.type == pg.QUIT:
@@ -85,20 +104,17 @@ while runs:
     x = max(0, min(x, width - image.get_width()))
     y = max(0, min(y, height - image.get_height()))
 
-
-
-    # Clear the screen
-    screen.fill(lightCoral)
-
     # Background spread
     background = pg.transform.scale(background, (width, height))
 
-    # Blit the background
-    screen.blit(background, (0, 0))
+    # Move and draw the enemy
+    if len(enemy_list) > 0:
+        for enemy in enemy_list:
+            enemy.move()
+            enemy.draw()
 
     # Display Object
     tank(x, y)
-
 
     pg.display.update()
 
