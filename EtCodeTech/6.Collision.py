@@ -1,5 +1,6 @@
 import pygame as pg
 import random
+import math
 
 # initialize pygame
 pg.init()
@@ -22,7 +23,7 @@ lightCoral = (240, 128, 128)
 screen.fill(lightCoral)
 
 
-# Image
+# Player
 def tank(xa, ya):
     picture = pg.image.load("OOP/picture/tanker64.png")
     screen.blit(picture, (xa, ya))
@@ -34,7 +35,19 @@ y = 300
 x_point = 0
 y_point = 0
 
+# Lives
+lives = 3
+font = pg.font.Font('freesansbold.ttf', 36)
 
+
+def show_lives():
+    x_lives = 10
+    y_lives = 10
+    lives_number = font.render(f"Lives: {lives}", True, (0, 0, 0))
+    screen.blit(lives_number, (x_lives, y_lives))
+
+
+# Enemy
 def tanker(xb, yb):
     picture = pg.image.load("OOP/picture/tankers64.png")
     screen.blit(picture, (xb, yb))
@@ -43,8 +56,19 @@ def tanker(xb, yb):
 # Move the image
 xs = random.randint(0, width)
 ys = random.randint(0, height)
+
+
 # x_points = 0
 # y_points = 0
+
+# Tabrakan
+def collision(x, y, xs, ys):
+    distance = math.sqrt((x - xs) ** 2 + (y - ys) ** 2)
+    if distance < 50:
+        return True
+    else:
+        return False
+
 
 runs = True
 while runs:
@@ -59,13 +83,13 @@ while runs:
             pg.mixer.music.play(-1)
 
             if event.key == pg.K_LEFT or event.key == ord("a"):
-                x_point -= 0.1
+                x_point -= 1
             elif event.key == pg.K_RIGHT or event.key == ord("d"):
-                x_point += 0.1
+                x_point += 1
             elif event.key == pg.K_UP or event.key == ord("w"):
-                y_point -= 0.1
+                y_point -= 1
             elif event.key == pg.K_DOWN or event.key == ord("s"):
-                y_point += 0.1
+                y_point += 1
 
         if event.type == pg.KEYUP:
             # Load music
@@ -103,6 +127,19 @@ while runs:
 
     # Blit the background
     screen.blit(background, (0, 0))
+
+    # Tabrakan
+    if collision(x, y, xs, ys):
+        lives -= 1
+    else:
+        lives += 0
+
+    # Game Over
+    if lives <= 0:
+        break
+
+    # Lives
+    show_lives()
 
     # Display Object
     tank(x, y)
