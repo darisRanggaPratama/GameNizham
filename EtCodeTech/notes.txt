@@ -1,122 +1,123 @@
-Algoritma atau Pseudo Code Game Spacewar (1962)
-Game Spacewar! adalah salah satu game komputer pertama yang dirancang pada tahun 1962 oleh Steve Russell. Game ini dimainkan oleh dua pemain yang mengontrol kapal luar angkasa dengan gravitasi planet di pusat layar. Berikut adalah penjelasan algoritma/pseudo code dari Spacewar:
+Daftar Asset yang Dibutuhkan
+1.Sprites:
+1.1.dino.png: Sprite Dino dalam posisi berlari.
+1.2.dino_duck.png: Sprite Dino merunduk.
+1.3.cactus.png: Gambar kaktus (bervariasi: kecil, besar, kelompok).
+1.4.ground.png: Texture tanah untuk efek scrolling.
+1.5.cloud.png: Sprite awan untuk latar belakang.
 
-Komponen Utama dalam Spacewar
-1.Kapal Luar Angkasa (Spaceships):
-1.1.Dua kapal yang dikendalikan pemain.
-1.2.Bisa bergerak: kiri, kanan, atas, bawah diagonal; menembak; dan terkena gravitasi. Ketika bergerak muncul suara pergerakan.
+2.Sound Effects:
+2.1.jump.wav: Suara saat Dino melompat.
+2.2.game_over.wav: Suara saat terjadi tabrakan.
 
-2.Gravitasi Planet:
-2.1.Planet di pusat layar memberikan gaya gravitasi yang mempengaruhi pergerakan kapal.
+3.Font:
+3.1.File font (e.g., pixel_font.ttf) untuk menampilkan skor.
 
-3.Peluru (Missiles):
-3.1.Kapal dapat menembak peluru untuk menyerang lawan. Setiap menembak muncul suara tembakan.
+Catatan Implementasi
+1.Gravitasi dan Lompatan:
+1.1.Gunakan persamaan gerak velocity += gravity untuk simulasi lompatan realistis.
+1.2.Batasi posisi Dino agar tidak jatuh di bawah ground (dino_y >= 300).
+2.Spawn Obstacle:
+2.1.Gunakan probabilitas acak (e.g., 2% per frame) untuk spawn obstacle.
+3.Collision Detection:
+3.1.Gunakan pygame.Rect.colliderect() untuk deteksi tabrakan sederhana.
+4.Scrolling Ground:
+4.1.Gerakkan texture ground ke kiri, lalu reset posisinya setelah mencapai batas layar.
+5.Peningkatan Kesulitan:
+5.1.Tingkatkan kecepatan (speed) berdasarkan skor (e.g., +0.1 setiap 100 poin).
 
-4.Deteksi Tabrakan:
-4.1.Tabrakan kapal dengan peluru akan menyebabkan "game over" atau reset posisi kapal. Ketika terjadi tabarakan muncul suara tabrakan.
-
-5.Skor
-5.1.Menghitung skor bila peluru tepat mengenai lawan.
-
-Algoritma Game
-Berikut adalah langkah-langkah algoritma dalam game Spacewar:
-
+Algoritma Utama
 1.Inisialisasi Game
-1.1.Tetapkan ukuran layar.
-1.2.Tentukan posisi awal kapal dan planet.
-1.3.Atur parameter seperti gravitasi, kecepatan kapal, dan kecepatan peluru.
-1.4.Siapkan sistem kontrol untuk kedua pemain.
+1.1.Buat window game dengan resolusi tertentu (e.g., 800x400).
+1.2.Muat asset: sprite Dino, cactus, ground, cloud, dan sound effects.
+1.3.Inisialisasi variabel: score, speed, gravity, dan status game (berjalan/berhenti).
 
-2.Loop Game (Game berjalan hingga pemain berhenti)
-2.1.Input Pemain:
-2.1.1.Baca input dari pemain (tombol untuk rotasi, maju, mundur, bergerak diagonal dan menembak).
+2.Game Loop
+2.1.Input Handling:
+2.1.1.Deteksi tombol SPACE untuk lompat.
+2.1.2.Deteksi tombol panah bawah untuk merunduk.
+2.1.3.Deteksi tombol ESC untuk keluar.
 
-2.2.Update Posisi Kapal:
-2.2.1.Hitung gaya gravitasi dari planet terhadap setiap kapal.
-2.2.2.Terapkan perubahan posisi kapal berdasarkan kecepatan dan arah (vector physics).
+2.2.Update Game State:
+2.2.1.Update posisi Dino dengan gravitasi.
+2.2.2.Gerakkan obstacle (cactus) dan ground.
+2.2.3.Spawn obstacle secara acak.
+2.2.4.Update skor dan tingkat kecepatan.
 
-2.3.Update Posisi Peluru:
-2.3.1.Perbarui posisi peluru berdasarkan kecepatan dan arah.
-2.3.2.Hapus peluru jika keluar dari layar.
+2.3.Collision Detection:
+2.3.1.Cek tabrakan antara Dino dan obstacle.
 
-2.4.Deteksi Tabrakan:
-2.4.1.Periksa apakah kapal bertabrakan dengan kapal lawan.
-2.4.2.Periksa apakah peluru mengenai kapal lawan.
-2.4.3.Jika terjadi tabrakan, lakukan aksi seperti menambah skor, reset kapal, atau efek suara.
-
-2.5.Render Grafis:
-2.5.1.Gambar planet, kapal, peluru, dan skor di layar.
-
-2.6.Atur Kecepatan Frame:
-2.6.1.Sinkronkan kecepatan game dengan timer.
-
-3.Selesai Game
-
-Game selesai jika pemain memutuskan untuk keluar.
-
-Fungsi-Fungsi Utama
-1.Gravitasi Planet. Gaya gravitasi ditambahkan ke arah gerakan kapal berdasarkan jarak dari planet. Rumus Gravitasi: F = G(m1.m2) / r^2
-2.Pergerakan Kapal. Posisi kapal diperbarui berdasarkan vektor kecepatan dan arah rotasi.
-3.Peluru. Peluru bergerak lurus sesuai arah kapal saat ditembakkan.
-4.Tabrakan. Hitungan jarak Euclidean digunakan untuk mendeteksi tabrakan. Rumus jarak Euclidean = d = √[(x2 - x1)2 + (y2 - y1)2]
-
-Pseudo Code Spacewar
-
-INITIALIZE game_window, spaceship1, spaceship2, planet, bullets1, bullets2
-SET gravity_constant, spaceship_speed, bullet_speed, screen_size
-
-WHILE game_running:
-    HANDLE input:
-        IF player1 presses "key left" THEN rotate spaceship1 counterclockwise
-        IF player1 presses "key right" THEN rotate spaceship1 clockwise
-        IF player1 presses "key up" THEN apply forward force to spaceship1
-        IF player1 presses "key down" THEN apply backward force to spaceship1
-        IF player1 presses "shift" THEN apply shoot the enemy
-
-        IF player1 presses "key A" THEN rotate spaceship1 counterclockwise
-        IF player1 presses "key D" THEN rotate spaceship1 clockwise
-        IF player1 presses "key W" THEN apply forward force to spaceship1
-        IF player1 presses "key S" THEN apply backward force to spaceship1
-        IF player1 presses "space" THEN apply shoot the enemy
-
-    UPDATE spaceship positions:
-        FOR each spaceship:
-            CALCULATE gravitational force from planet
-            UPDATE spaceship velocity using gravity and thrust
-            UPDATE spaceship position using velocity
-            WRAP spaceship position around screen if out of bounds
-
-    UPDATE bullets positions:
-        FOR each bullet in bullets1 and bullets2:
-            UPDATE bullet position using velocity
-            REMOVE bullet if out of screen bounds
-
-    DETECT collisions:
-        FOR each bullet in bullets1:
-            IF bullet hits spaceship2 THEN:
-                INCREMENT score of player1
-                RESET spaceship2 position
-                REMOVE bullet
-
-        FOR each bullet in bullets2:
-            IF bullet hits spaceship1 THEN:
-                INCREMENT score of player2
-                RESET spaceship1 position
-                REMOVE bullet
-
-        IF spaceship1 or spaceship2 hits planet THEN:
-            RESET position of the spaceship
-
-    RENDER game objects:
-        DRAW background
-        DRAW planet
-        DRAW spaceship1 and spaceship2
-        DRAW bullets
-        DISPLAY score of both players
-
-    WAIT for next frame
-
-END
+2.4.Render:
+2.4.1.Gambar latar, ground, Dino, obstacle, dan skor.
+2.4.2.Jika game over, tampilkan pesan "Game Over".
 
 
+Pseudo Code:
+IMPORT pygame
+INITIALIZE pygame
 
+# Inisialisasi Variabel
+screen = CREATE_WINDOW(800, 400)
+clock = CREATE_CLOCK()
+dino = LOAD_SPRITE("dino.png")
+cactus = LOAD_SPRITE("cactus.png")
+ground = LOAD_SPRITE("ground.png")
+FPS = 60
+gravity = 0.5
+dino_y = 300
+dino_velocity = 0
+obstacles = []
+score = 0
+game_active = True
+
+WHILE True:
+    # Event Handling
+    FOR event IN pygame.event.get():
+        IF event.type == QUIT:
+            EXIT
+        IF event.type == KEYDOWN:
+            IF event.key == K_SPACE AND game_active:
+                dino_velocity = -12  # Lompat
+            IF event.key == K_DOWN:
+                dino = LOAD_SPRITE("dino_duck.png")  # Merunduk
+
+    # Update Game State
+    IF game_active:
+        # Update Posisi Dino
+        dino_y += dino_velocity
+        dino_velocity += gravity
+        IF dino_y >= 300:  # Batasi di ground
+            dino_y = 300
+            dino_velocity = 0
+
+        # Spawn Obstacle
+        IF RANDOM() < 0.02:
+            ADD obstacles(cactus)
+
+        # Gerakkan Obstacle & Ground
+        FOR obstacle IN obstacles:
+            obstacle.x -= speed
+            IF obstacle.x < -50:
+                REMOVE obstacle
+        ground_scroll -= speed
+
+        # Update Skor & Speed
+        score += 1
+        speed = 5 + score // 100
+
+        # Collision Detection
+        IF CHECK_COLLISION(dino, obstacles):
+            game_active = False
+
+    # Render
+    DRAW_BACKGROUND()
+    DRAW_GROUND(ground_scroll)
+    DRAW_DINO(dino, dino_y)
+    DRAW_OBSTACLES(obstacles)
+    DRAW_SCORE(score)
+
+    IF NOT game_active:
+        DRAW_TEXT("GAME OVER", (400, 200))
+
+    UPDATE_DISPLAY()
+    clock.tick(FPS)
