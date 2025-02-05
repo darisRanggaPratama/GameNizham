@@ -12,12 +12,12 @@ class Display:
     background = pygame.image.load("background.png")
     font = pygame.font.Font("SHPinscher-Regular.otf", 35)
 
-    spaceship = pygame.image.load("spaceship.png")
-    enemy_spaceship = pygame.image.load("enemy spaceship.png")
-    enemy_missile_craft = pygame.image.load("missile spaceship.png")
-    laser = pygame.image.load("bullet.png")
-    enemy_laser = pygame.image.load("enemy laser.png")
-    missile = pygame.image.load("missile.png")
+    spaceship = pygame.image.load("space_ship.png")
+    enemy_spaceship = pygame.image.load("enemy-spaceship.png")
+    enemy_missile_craft = pygame.image.load("enemy-ship.png")
+    laser = pygame.image.load("bullet-right.png")
+    enemy_laser = pygame.image.load("bullet-left.png")
+    missile = pygame.image.load("missile-left.png")
 
     # Sound effects
     shoot_sound = pygame.mixer.Sound("tank-shots.mp3")
