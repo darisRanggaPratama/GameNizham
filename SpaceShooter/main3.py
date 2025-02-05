@@ -1,6 +1,7 @@
-import pygame
 import random
-import time
+
+import pygame
+
 
 class Display:
     pygame.init()
@@ -24,6 +25,7 @@ class Display:
     enemy_shoot_sound = pygame.mixer.Sound("tank-hits.mp3")
     explosion_sound = pygame.mixer.Sound("tank-explode.mp3")
 
+
 class Text:
     def __init__(self, text: str, size: int):
         self.text = text
@@ -34,6 +36,7 @@ class Text:
         color = (255, 0, 0) if self.selected else (255, 255, 255)
         font = pygame.font.Font("SHPinscher-Regular.otf", self.size)
         return font.render(self.text, True, color)
+
 
 class Menu:
     def __init__(self):
@@ -106,6 +109,7 @@ class Menu:
 
             self.objects()
             pygame.display.flip()
+
 
 class GameOver:
     def __init__(self, score, health, play_time):
@@ -190,6 +194,7 @@ class GameOver:
             self.objects()
             pygame.display.flip()
 
+
 class Enemies:
     def __init__(self):
         self.x = random.randint(700, 1000)
@@ -216,6 +221,7 @@ class Enemies:
             Display().enemy_shoot_sound.play()
         else:
             Display().shoot_sound.play()
+
 
 class Objects:
     def __init__(self):
@@ -359,7 +365,7 @@ class Objects:
                 self.score -= 1
                 self.reset_enemies(enemies, False)
                 if self.health <= 0:
-                    play_time = (pygame.time.get_ticks() - self.start_time)/1000 if self.start_time else 0
+                    play_time = (pygame.time.get_ticks() - self.start_time) / 1000 if self.start_time else 0
                     GameOver(self.score, self.health, play_time).execute()
 
     def enemy_laser(self, enemy: Enemies):
@@ -425,8 +431,9 @@ class Objects:
             self.health -= 1
             self.score -= 1  # Mengurangi skor saat tertabrak
             if self.health <= 0:
-                play_time = (pygame.time.get_ticks() - self.start_time)/1000 if self.start_time else 0
+                play_time = (pygame.time.get_ticks() - self.start_time) / 1000 if self.start_time else 0
                 GameOver(self.score, self.health, play_time).execute()
+
 
 class Start:
     def __init__(self):
@@ -476,10 +483,11 @@ class Start:
             self.object.add_enemies()
 
             if self.object.health <= 0 or self.object.score >= 100:
-                play_time = (pygame.time.get_ticks() - self.object.start_time)/1000 if self.object.start_time else 0
+                play_time = (pygame.time.get_ticks() - self.object.start_time) / 1000 if self.object.start_time else 0
                 GameOver(self.object.score, self.object.health, play_time).execute()
 
             pygame.display.flip()
             Display().clock.tick(60)
+
 
 Menu().execute()
