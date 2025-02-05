@@ -194,6 +194,8 @@ class Enemies:
         self.shoot_cooldown = 0
         self.player_x = player_x
         self.player_y = player_y
+        # Tambahkan variabel untuk mengontrol probabilitas menembak
+        self.firing_chance = 0.3  # 30% chance to fire when cooldown ready
 
     def collision_box(self):
         return pygame.Rect(
@@ -221,36 +223,44 @@ class Enemies:
         return vel_x, vel_y
 
     def firing(self, player_x, player_y):
+        # Hanya menembak jika random check berhasil
+        if random.random() > self.firing_chance:
+            return
         # Enhanced firing mechanism with precise targeting
+        # Laser firing
         if self.type == 1:
-            # Laser firing
-            trajectory_x, trajectory_y = self.calculate_trajectory(
-                self.x, self.y + 28,
-                player_x, player_y + Display.spaceship.get_height() // 2,
-                5
-            )
-            self.bullets_list.append({
-                'x': self.x,
-                'y': self.y + 28,
-                'vel_x': trajectory_x,
-                'vel_y': trajectory_y
-            })
-            Display.enemy_shoot_sound.play()
+            # Maksimum 2 laser aktif per musuh
+           if len(self.bullets_list) < 2:
+                trajectory_x, trajectory_y = self.calculate_trajectory(
+                    self.x, self.y + 28,
+                    player_x, player_y + Display.spaceship.get_height() // 2,
+                    5
+                )
+                self.bullets_list.append({
+                    'x': self.x,
+                    'y': self.y + 28,
+                    'vel_x': trajectory_x,
+                    'vel_y': trajectory_y
+                })
+                Display.enemy_shoot_sound.play()
 
-        elif self.type == 2:
-            # Missile firing with homing behavior
-            trajectory_x, trajectory_y = self.calculate_trajectory(
-                self.x, self.y,
-                player_x, player_y,
-                2
-            )
-            self.missiles_list.append({
-                'x': self.x,
-                'y': self.y,
-                'vel_x': trajectory_x,
-                'vel_y': trajectory_y
-            })
-            Display.shoot_sound.play()
+        # Missile firing
+        elif self.type == 1:
+            # Tambahkan pengecekan jumlah maksimum misil
+            # Maksimum 2 misil aktif per musuh
+            if len(self.missiles_list) < 1:
+                trajectory_x, trajectory_y = self.calculate_trajectory(
+                    self.x, self.y,
+                    player_x, player_y,
+                    2
+                )
+                self.missiles_list.append({
+                    'x': self.x,
+                    'y': self.y,
+                    'vel_x': trajectory_x,
+                    'vel_y': trajectory_y
+                })
+                Display.shoot_sound.play()
 
 
 class Objects:
@@ -259,14 +269,19 @@ class Objects:
         self.y = (Display.windows.get_height() - Display.spaceship.get_width()) / 2
         self.laser_list = []
         self.enemies_list = []
-        self.enemy_count = 3
+        # Kurangi jumlah awal enemy
+        self.enemy_count = random.randint(40, 50)
         self.background_list = [[0, 0], [1800, 0]]
         self.score = 0
-        self.condition = 10
+        # Tingkatkan threshold score untuk spawn enemy baru
+        # Ubah dari 10 menjadi 20
+        self.condition = 20
         self.health = 10000
         self.start_time = None
         self.game_started = False
         self.movement_sound_playing = False
+        # Maksimum enemy di layar
+        self.max_enemies = 30
 
     def objects(self):
         Display.windows.fill((0, 0, 0))
@@ -279,9 +294,18 @@ class Objects:
         self.health_display()
 
     def place_enemies(self):
-        for i in range(self.enemy_count):
-            if len(self.enemies_list) < self.enemy_count:
-                self.enemies_list.append(Enemies(self.x, self.y))
+        # Batasi jumlah total enemy yang dapat spawn
+        if len(self.enemies_list) < self.enemy_count and len(self.enemies_list) < self.max_enemies:
+            # Tambahkan delay spawning dengan probabilitas
+            if random.random() < 0.5:  # 50% chance untuk spawn enemy baru
+                new_enemy = Enemies(self.x, self.y)
+                # Seimbangkan rasio tipe enemy
+                if len([e for e in self.enemies_list if e.type == 1]) > len(
+                        [e for e in self.enemies_list if e.type == 2]):
+                    new_enemy.type = 2
+                else:
+                    new_enemy.type = 1
+                self.enemies_list.append(new_enemy)
 
     def enemies_movement(self):
         for enemies in self.enemies_list[:]:
@@ -294,8 +318,10 @@ class Objects:
                 enemies.x -= 2
             else:
                 # Enhanced continuous shooting
+                # Tingkatkan cooldown untuk mengurangi frekuensi tembakan
                 enemies.shoot_cooldown += 1
-                if enemies.shoot_cooldown >= 30:  # Adjust cooldown as needed
+                # Ubah dari 30 ke 60 (setara dengan 1 detik pada 60 FPS)
+                if enemies.shoot_cooldown >= 60:  # Adjust cooldown as needed
                     enemies.firing(self.x, self.y)
                     enemies.shoot_cooldown = 0
 
@@ -427,9 +453,13 @@ class Objects:
         Display.shoot_sound.play()
 
     def add_enemies(self):
+        # Modifikasi sistem penambahan enemy berdasarkan score
         if self.score >= self.condition:
-            self.enemy_count += 1
-            self.condition += 10
+            # Hanya tambah enemy jika belum mencapai batas maksimum
+            if self.enemy_count < self.max_enemies:
+                self.enemy_count += 1
+            # Tingkatkan threshold untuk spawn berikutnya
+            self.condition += 10  # Ubah dari 10
 
     def reset_enemies(self, enemies: 'Enemies', condition: bool):
         enemies.alive = False
@@ -438,11 +468,19 @@ class Objects:
                 self.enemies_list.remove(enemies)
                 self.enemy_count -= 1
         if not condition:
-            new_enemy = Enemies(self.x, self.y)
-            new_enemy.x = random.randint(700, 1000)
-            new_enemy.y = random.randint(0, Display.windows.get_height() - Display.enemy_spaceship.get_height())
-            self.enemies_list.append(new_enemy)
-            self.enemy_count += 1
+            # Tambahkan pengecekan jumlah maksimum enemy
+            if len(self.enemies_list) < self.max_enemies:
+                new_enemy = Enemies(self.x, self.y)
+                new_enemy.x = random.randint(700, 1000)
+                new_enemy.y = random.randint(0, Display.windows.get_height() - Display.enemy_spaceship.get_height())
+                # Seimbangkan rasio tipe enemy
+                if len([e for e in self.enemies_list if e.type == 1]) > len(
+                        [e for e in self.enemies_list if e.type == 2]):
+                    new_enemy.type = 2
+                else:
+                    new_enemy.type = 1
+                self.enemies_list.append(new_enemy)
+                self.enemy_count += 1
 
     def player_hit(self, collision: pygame.Rect):
         hit = collision.colliderect(self.collision_box())
