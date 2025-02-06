@@ -197,7 +197,7 @@ class Enemies:
         self.player_x = player_x
         self.player_y = player_y
         # Tambahkan variabel untuk mengontrol probabilitas menembak
-        self.firing_chance = 0.3  # 30% chance to fire when cooldown ready
+        self.firing_chance = 0.1  # 10% chance to fire when cooldown ready
 
     def collision_box(self):
         return pygame.Rect(
@@ -232,7 +232,7 @@ class Enemies:
         # Laser firing
         if self.type == 1:
             # Maksimum 2 laser aktif per musuh
-           if len(self.bullets_list) < 2:
+           if len(self.bullets_list) < 3:
                 trajectory_x, trajectory_y = self.calculate_trajectory(
                     self.x, self.y + 28,
                     player_x, player_y + Display.spaceship.get_height() // 2,
@@ -252,7 +252,7 @@ class Enemies:
         elif self.type == 1:
             # Tambahkan pengecekan jumlah maksimum misil
             # Maksimum 2 misil aktif per musuh
-            if len(self.missiles_list) < 3:
+            if len(self.missiles_list) < 5:
                 trajectory_x, trajectory_y = self.calculate_trajectory(
                     self.x, self.y,
                     player_x, player_y,
@@ -472,12 +472,22 @@ class Objects:
                 self.enemies_list.remove(enemies)
                 self.enemy_count -= 1
         if not condition:
-            # Tambahkan pengecekan jumlah maksimum enemy
             if len(self.enemies_list) < self.max_enemies:
                 new_enemy = Enemies(self.x, self.y)
-                new_enemy.x = random.randint(Display.heightScreen, Display.heightScreen)
-                new_enemy.y = random.randint(0, Display.windows.get_height() - Display.enemy_spaceship.get_height())
-                # Seimbangkan rasio tipe enemy
+                # Perluas area spawn di sisi kanan layar
+                new_enemy.x = random.randint(
+                    700,
+                    Display.windows.get_width() - Display.enemy_spaceship.get_width()  # Batas kanan layar
+                )
+                new_enemy.y = random.randint(
+                    0,
+                    Display.windows.get_height() - Display.enemy_spaceship.get_height()
+                )
+                # Tambahkan variasi vertikal lebih besar
+                new_enemy.y = random.randint(
+                    max(0, new_enemy.y - 200),
+                    min(Display.windows.get_height() - Display.enemy_spaceship.get_height(), new_enemy.y + 200)
+                )
                 if len([e for e in self.enemies_list if e.type == 1]) > len(
                         [e for e in self.enemies_list if e.type == 2]):
                     new_enemy.type = 2
