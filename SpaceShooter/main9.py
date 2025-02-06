@@ -232,14 +232,13 @@ class Enemies:
         # Laser firing
         if self.type == 1:
             # Maksimum 2 laser aktif per musuh
-           if len(self.bullets_list) < 3:
+            if len(self.bullets_list) < 3:
                 trajectory_x, trajectory_y = self.calculate_trajectory(
                     self.x, self.y + 28,
                     player_x, player_y + Display.spaceship.get_height() // 2,
                     5
                 )
                 self.bullets_list.append({
-
 
                     'x': self.x,
                     'y': self.y + 28,
