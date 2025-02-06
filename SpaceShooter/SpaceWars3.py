@@ -12,7 +12,22 @@ class Display:
     pygame.display.set_caption("Enhanced Space Shooter")
     clock = pygame.time.Clock()
 
-    background = pygame.image.load("background.png")
+    background = pygame.image.load("background5.jpg")
+    background = pygame.transform.scale(background, (widthScreen, heightScreen))
+
+    # Array of images for the background
+    backgrounds = [
+        pygame.transform.scale(pygame.image.load("background0.jpg"), (widthScreen, heightScreen)),
+        pygame.transform.scale(pygame.image.load("background1.png"), (widthScreen, heightScreen)),
+        pygame.transform.scale(pygame.image.load("background2.jpg"), (widthScreen, heightScreen)),
+        pygame.transform.scale(pygame.image.load("background3.jpeg"), (widthScreen, heightScreen)),
+        pygame.transform.scale(pygame.image.load("background4.jpg"), (widthScreen, heightScreen)),
+        pygame.transform.scale(pygame.image.load("background5.jpg"), (widthScreen, heightScreen))
+    ]
+
+    index = 0
+    background_timer = 0
+
     font = pygame.font.Font("SHPinscher-Regular.otf", 35)
 
     spaceship = pygame.image.load("space_ship.png")
@@ -82,6 +97,7 @@ class Menu:
 
     def objects(self):
         spacing = 50
+
         Display.windows.blit(Display.background, (0, 0))
         for text in self.text_list:
             Display.windows.blit(
@@ -184,7 +200,7 @@ class GameOver:
 
 class Enemies:
     def __init__(self, player_x, player_y):
-        self.x = random.randint( Display.windows.get_width() // 3, Display.windows.get_height())
+        self.x = random.randint(Display.windows.get_width() // 3, Display.windows.get_height())
         self.y = random.randint(
             0,
             Display.windows.get_height() - Display.enemy_spaceship.get_height() + 1,
@@ -280,7 +296,7 @@ class Objects:
         self.enemies_list = []
         # Kurangi jumlah awal enemy
         self.enemy_count = random.randint(5, 10)
-        self.background_list = [[0, 0], [1800, 0]]
+        self.background_list = [[0, 0], [Display.widthScreen, 0]]
         self.score = 0
         # Tingkatkan threshold score untuk spawn enemy baru
         # Ubah dari 10 menjadi 20
@@ -466,13 +482,26 @@ class Objects:
         )
 
     def background(self):
+        # Increment background change timer
+        Display.background_timer += 1
+
+        # Change background every 5 seconds (approximately 300 frames at 60 FPS)
+        if Display.background_timer >= 300:
+            Display.index = (Display.index + 1) % len(Display.backgrounds)
+            Display.background_timer = 0
+
+        # Use current background image
+        current_background = Display.backgrounds[Display.index]
+
         for location in self.background_list:
-            Display.windows.blit(Display.background, (location[0], location[1]))
+            Display.windows.blit(current_background, (location[0], location[1]))
             location[0] -= 2
 
-            if location[0] + Display.background.get_width() <= 0:
-                index = self.background_list.index(location)
-                self.background_list[index][0] = self.background_list[index - 1][0] + 1800
+            # When first background completely leaves screen, reset its position
+            if location[0] + Display.widthScreen <= 0:
+                # Place it after the last background
+                location[0] = self.background_list[(self.background_list.index(location) + 1) % 2][
+                                  0] + Display.widthScreen
 
     def health_display(self):
         health_text = Display.font.render(f"Health: {self.health}", True, (255, 255, 255))
