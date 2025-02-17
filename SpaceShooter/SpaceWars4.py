@@ -15,7 +15,6 @@ class Display:
     background = pygame.image.load("background5.jpg")
     background = pygame.transform.scale(background, (widthScreen, heightScreen))
 
-    # Array of images for the background
     backgrounds = [
         pygame.transform.scale(pygame.image.load("background0.jpg"), (widthScreen, heightScreen)),
         pygame.transform.scale(pygame.image.load("background1.png"), (widthScreen, heightScreen)),
@@ -37,11 +36,12 @@ class Display:
     enemy_laser = pygame.image.load("missile-right.png")
     missile = pygame.image.load("missile-xright.png")
 
-    # Sound effects
     shoot_sound = pygame.mixer.Sound("tank-shots.mp3")
     enemy_shoot_sound = pygame.mixer.Sound("tank-hits.mp3")
     explosion_sound = pygame.mixer.Sound("tank-explode.mp3")
     background_music = pygame.mixer.Sound("background.mp3")
+    victory_sound = pygame.mixer.Sound("victory.mp3")  # Add victory sound
+    defeat_sound = pygame.mixer.Sound("defeat.mp3")  # Add defeat sound
 
 
 class Text:
@@ -56,68 +56,71 @@ class Text:
         return font.render(self.text, True, color)
 
 
-class Menu:
-    def __init__(self):
+class Victory:
+    def __init__(self, score, health, play_time):
         self.text_list = []
-        self.selected = 1
+        self.selected = 0
+        self.score = score
+        self.health = health
+        self.play_time = play_time
+        pygame.mixer.stop()
+        Display.victory_sound.play()
 
-    def text(self):
-        text_list = ["Main Menu", "Start", "Exit"]
-        size_list = [70, 40, 40]
-        self.text_list = [
-            Text(text_list[i], size_list[i]) for i in range(len(text_list))
-        ]
-        self.text_list[1].selected = True
+    def text(self, code: int):
+        options = ["Play Again  ", "  Exit"]
+        if code == 1:
+            return Text("Victory!", 90).display()
+        if code == 2:
+            return Text(f"Score: {self.score}  Health: {self.health}  Time: {self.play_time:.1f}s", 50).display()
+        if code == 3:
+            self.text_list = [Text(text, 40) for text in options]
+            self.text_list[0].selected = True
+
+    def objects(self):
+        Display.windows.blit(Display.background, (0, 0))
+        Display.windows.blit(
+            self.text(1),
+            ((Display.windows.get_width() - self.text(1).get_width()) / 2, 70),
+        )
+        Display.windows.blit(
+            self.text(2),
+            ((Display.windows.get_width() - self.text(2).get_width()) / 2, 200),
+        )
+        for text in self.text_list:
+            if text == self.text_list[0]:
+                ops = (Display.windows.get_width() - text.display().get_width()) / 2 - 50
+            else:
+                ops = (Display.windows.get_width() - text.display().get_width()) / 2 + 50
+            Display.windows.blit(text.display(), (ops, 250))
 
     def controls(self, event: pygame.event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_w or event.key == pygame.K_UP:
+            if event.key in [pygame.K_d, pygame.K_RIGHT]:
                 self.select(1)
-            if event.key == pygame.K_s or event.key == pygame.K_DOWN:
+            if event.key in [pygame.K_a, pygame.K_LEFT]:
                 self.select(2)
 
     def select(self, code: int):
         for text in self.text_list:
             text.selected = False
-
-        if code == 1:
-            self.selected = 1 if self.selected == 2 else 2
-        if code == 2:
-            self.selected = 2 if self.selected == 1 else 1
-
+        self.selected = 1 - self.selected  # Toggle between 0 and 1
         self.text_list[self.selected].selected = True
 
-    def buttons_function(self, event: pygame.event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                if self.selected == 1:
-                    Start().execute()
-                if self.selected == 2:
-                    exit()
-
-    def objects(self):
-        spacing = 50
-
-        Display.windows.blit(Display.background, (0, 0))
-        for text in self.text_list:
-            Display.windows.blit(
-                text.display(),
-                (
-                    (Display.windows.get_width() - text.display().get_width()) / 2,
-                    spacing,
-                ),
-            )
-            spacing += 100
+    def buttons_func(self, event: pygame.event):
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+            if self.selected == 0:
+                Start().execute()
+            else:
+                exit()
 
     def execute(self):
-        self.text()
+        self.text(3)
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
                 self.controls(event)
-                self.buttons_function(event)
-
+                self.buttons_func(event)
             self.objects()
             pygame.display.flip()
 
@@ -130,9 +133,10 @@ class GameOver:
         self.health = health
         self.play_time = play_time
         pygame.mixer.stop()
+        Display.defeat_sound.play()
 
     def text(self, code: int):
-        options = ["Yes", "No"]
+        options = ["Try Again", "Exit"]
         if code == 1:
             return Text("Game Over", 90).display()
         if code == 2:
@@ -156,34 +160,27 @@ class GameOver:
                 ops = (Display.windows.get_width() - text.display().get_width()) / 2 - 50
             else:
                 ops = (Display.windows.get_width() - text.display().get_width()) / 2 + 50
-
             Display.windows.blit(text.display(), (ops, 250))
 
     def controls(self, event: pygame.event):
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_d or event.key == pygame.K_RIGHT:
+            if event.key in [pygame.K_d, pygame.K_RIGHT]:
                 self.select(1)
-            if event.key == pygame.K_a or event.key == pygame.K_LEFT:
+            if event.key in [pygame.K_a, pygame.K_LEFT]:
                 self.select(2)
 
     def select(self, code: int):
         for text in self.text_list:
             text.selected = False
-
-        if code == 1:
-            self.selected = 0 if self.selected == 1 else 1
-        if code == 2:
-            self.selected = 1 if self.selected == 0 else 0
-
+        self.selected = 1 - self.selected  # Toggle between 0 and 1
         self.text_list[self.selected].selected = True
 
     def buttons_func(self, event: pygame.event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                if self.selected == 0:
-                    Start().execute()
-                if self.selected == 1:
-                    exit()
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+            if self.selected == 0:
+                Start().execute()
+            else:
+                exit()
 
     def execute(self):
         self.text(3)
@@ -193,7 +190,6 @@ class GameOver:
                     exit()
                 self.controls(event)
                 self.buttons_func(event)
-
             self.objects()
             pygame.display.flip()
 
@@ -288,26 +284,96 @@ class Enemies:
                 Display.shoot_sound.play()
 
 
+class Menu:
+    def __init__(self):
+        self.text_list = []
+        self.selected = 1
+
+    def text(self):
+        text_list = ["Space Wars", "Start", "Exit"]
+        size_list = [70, 40, 40]
+        self.text_list = [
+            Text(text_list[i], size_list[i]) for i in range(len(text_list))
+        ]
+        self.text_list[1].selected = True
+
+    def controls(self, event: pygame.event):
+        if event.type == pygame.KEYDOWN:
+            if event.key in [pygame.K_w, pygame.K_UP]:
+                self.select(1)
+            if event.key in [pygame.K_s, pygame.K_DOWN]:
+                self.select(2)
+
+    def select(self, code: int):
+        for text in self.text_list:
+            text.selected = False
+        self.selected = 2 if self.selected == 1 else 1
+        self.text_list[self.selected].selected = True
+
+    def buttons_function(self, event: pygame.event):
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+            if self.selected == 1:
+                Start().execute()
+            if self.selected == 2:
+                exit()
+
+    def objects(self):
+        spacing = 50
+        Display.windows.blit(Display.background, (0, 0))
+        for text in self.text_list:
+            Display.windows.blit(
+                text.display(),
+                ((Display.windows.get_width() - text.display().get_width()) / 2, spacing),
+            )
+            spacing += 100
+
+    def execute(self):
+        self.text()
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    exit()
+                self.controls(event)
+                self.buttons_function(event)
+            self.objects()
+            pygame.display.flip()
+
+
 class Objects:
     def __init__(self):
         self.x = 40
         self.y = (Display.windows.get_height() - Display.spaceship.get_width()) / 2
         self.laser_list = []
         self.enemies_list = []
-        # Kurangi jumlah awal enemy
         self.enemy_count = random.randint(1, 3)
         self.background_list = [[0, 0], [Display.widthScreen, 0]]
         self.score = 0
-        # Tingkatkan threshold score untuk spawn enemy baru
-        # Ubah dari 10 menjadi 20
         self.condition = 20
         self.health = 1000
         self.start_time = None
         self.game_started = False
         self.movement_sound_playing = False
-        # Maksimum enemy di layar
-        self.max_enemies = 20
+        self.max_enemies = 3
+        self.victory_condition = False
 
+    def check_victory(self):
+        # Check if there are no enemies or enemy projectiles on screen
+        no_enemies = len([e for e in self.enemies_list if e.alive]) == 0
+        no_enemy_projectiles = all(len(e.bullets_list) == 0 and len(e.missiles_list) == 0
+                                   for e in self.enemies_list)
+
+        if no_enemies and no_enemy_projectiles:
+            self.victory_condition = True
+            play_time = (pygame.time.get_ticks() - self.start_time) / 1000 if self.start_time else 0
+            Victory(self.score, self.health, play_time).execute()
+
+    def check_defeat(self):
+        if self.health <= 0:
+            play_time = (pygame.time.get_ticks() - self.start_time) / 1000 if self.start_time else 0
+            GameOver(self.score, self.health, play_time).execute()
+
+    # [Rest of the Objects class methods remain the same]
+    # Include all other methods from the original Objects class here
     def objects(self):
         Display.windows.fill((0, 0, 0))
         self.background()
@@ -565,8 +631,6 @@ class Objects:
                 GameOver(self.score, self.health, play_time).execute()
 
 
-# Rest of the code remains the same as in the original implementation
-# (Menu, GameOver, Start classes)
 class Start:
     def __init__(self):
         self.object = Objects()
@@ -575,13 +639,11 @@ class Start:
 
     def controls(self, event):
         if event.type == pygame.KEYDOWN:
-            # Start background music when spaceship starts moving
-            if event.key == pygame.K_w or event.key == pygame.K_s:
+            if event.key in [pygame.K_w, pygame.K_s]:
                 if not self.object.movement_sound_playing:
-                    Display.background_music.play(-1)  # -1 means loop indefinitely
+                    Display.background_music.play(-1)
                     self.object.movement_sound_playing = True
 
-            # Existing movement controls
             if event.key == pygame.K_w:
                 self.up = True
                 if not self.object.game_started:
@@ -594,9 +656,8 @@ class Start:
                     self.object.game_started = True
 
         if event.type == pygame.KEYUP:
-            # Stop background music when not moving
-            if event.key == pygame.K_w or event.key == pygame.K_s:
-                if not self.up and not self.down:
+            if event.key in [pygame.K_w, pygame.K_s]:
+                if not (self.up or self.down):
                     Display.background_music.stop()
                     self.object.movement_sound_playing = False
 
@@ -619,22 +680,20 @@ class Start:
             self.object.place_enemies()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    quit()
+                    exit()
                 self.controls(event)
 
             self.movements()
             self.object.objects()
             self.object.add_enemies()
 
-            if self.object.health <= 0 or self.object.score >= 1000:
-                play_time = (
-                                    pygame.time.get_ticks() - self.object.start_time) / 1000 if self.object.start_time else 0
-                GameOver(self.object.score, self.object.health, play_time).execute()
+            # Check victory and defeat conditions
+            self.object.check_victory()
+            self.object.check_defeat()
 
             pygame.display.flip()
             Display.clock.tick(60)
 
 
-# Start the game
 if __name__ == "__main__":
     Menu().execute()
