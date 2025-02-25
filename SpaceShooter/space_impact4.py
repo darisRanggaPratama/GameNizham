@@ -103,7 +103,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = 5
         self.last_shot = 0
         self.shot_delay = 500  # 0.5 seconds between shots
-        self.lives = 3
+        self.lives = 10
         self.auto_shoot = True  # Enable auto-shooting by default
 
     def update(self):

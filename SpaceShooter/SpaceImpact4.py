@@ -51,7 +51,7 @@ defeat_sound = pygame.mixer.Sound("defeat.mp3")
 # Putar musik latar
 background_music.play(-1)
 
-# Kelas
+# Kelas-kelas (tanpa perubahan)
 class PlayerShip(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -112,7 +112,7 @@ class Enemy(pygame.sprite.Sprite):
             enemy_shoot_sound.play()
 
 class StraightEnemy(Enemy):
-    pass  # Bergerak lurus
+    pass
 
 class ZigzagEnemy(Enemy):
     def __init__(self, image, speed, shoot_interval, bullet_img=None):
@@ -194,6 +194,10 @@ lives = 3
 game_state = "playing"
 background_x = 0
 
+# Variabel untuk spawn asteroid secara acak
+asteroid_spawn_timer = 0
+asteroid_spawn_interval = random.randint(3000, 5000)  # Interval acak antara 3-5 detik
+
 # Fungsi untuk memulai level baru
 def start_level(level_index):
     global enemies_to_spawn
@@ -206,7 +210,7 @@ def start_level(level_index):
             elif enemy_type["type"] == "missile_craft":
                 enemies_to_spawn.append(ZigzagEnemy(enemy_missile_craft_img, 3, 1500, missile_img))
             elif enemy_type["type"] == "asteroid":
-                enemies_to_spawn.append(SinusoidalEnemy(asteroid_img, 2, None))  # Tidak menembak
+                enemies_to_spawn.append(SinusoidalEnemy(asteroid_img, 2, None))
 
 # Mulai level pertama
 start_level(0)
@@ -225,13 +229,12 @@ while running:
                     player_ship.shoot()
             elif game_state == "game_over" or game_state == "victory":
                 if event.key == pygame.K_r:
-                    # Mulai ulang permainan
                     score = 0
                     lives = 3
                     current_level = 0
                     start_level(0)
                     game_state = "playing"
-                    background_music.play(-1)  # Putar ulang musik latar
+                    background_music.play(-1)
                 elif event.key == pygame.K_q:
                     running = False
 
@@ -239,7 +242,7 @@ while running:
         # Perbarui posisi kapal pemain
         player_ship.update()
 
-        # Munculkan musuh
+        # Munculkan musuh dari level
         current_time = pygame.time.get_ticks()
         if enemies_to_spawn and current_time - spawn_timer >= spawn_interval:
             enemy = enemies_to_spawn.pop(0)
@@ -248,6 +251,17 @@ while running:
             enemies.add(enemy)
             all_sprites.add(enemy)
             spawn_timer = current_time
+
+        # Munculkan asteroid secara acak
+        asteroid_spawn_timer += clock.get_time()
+        if asteroid_spawn_timer >= asteroid_spawn_interval:
+            asteroid = SinusoidalEnemy(asteroid_img, 2, None)
+            asteroid.rect.x = widthScreen
+            asteroid.rect.y = random.randint(50, heightScreen - 50)
+            enemies.add(asteroid)
+            all_sprites.add(asteroid)
+            asteroid_spawn_timer = 0
+            asteroid_spawn_interval = random.randint(3000, 5000)  # Interval acak baru
 
         # Perbarui semua sprite
         all_sprites.update()
@@ -267,7 +281,7 @@ while running:
                 all_sprites.add(explosion)
                 explosion_sound.play()
                 game_state = "game_over"
-                background_music.stop()  # Hentikan musik latar
+                background_music.stop()
                 shoot_sound.stop()
                 enemy_shoot_sound.stop()
                 explosion_sound.stop()
@@ -280,7 +294,7 @@ while running:
                 all_sprites.add(explosion)
                 explosion_sound.play()
                 game_state = "game_over"
-                background_music.stop()  # Hentikan musik latar
+                background_music.stop()
                 shoot_sound.stop()
                 enemy_shoot_sound.stop()
                 explosion_sound.stop()
@@ -293,7 +307,7 @@ while running:
                 start_level(current_level)
             else:
                 game_state = "victory"
-                background_music.stop()  # Hentikan musik latar
+                background_music.stop()
                 shoot_sound.stop()
                 enemy_shoot_sound.stop()
                 explosion_sound.stop()

@@ -51,7 +51,8 @@ defeat_sound = pygame.mixer.Sound("defeat.mp3")
 # Putar musik latar
 background_music.play(-1)
 
-# Kelas
+
+# Kelas-kelas (tanpa perubahan)
 class PlayerShip(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -73,6 +74,7 @@ class PlayerShip(pygame.sprite.Sprite):
             all_sprites.add(bullet)
             self.last_shoot_time = current_time
             shoot_sound.play()
+
 
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, image, speed, shoot_interval, bullet_img=None):
@@ -111,8 +113,10 @@ class Enemy(pygame.sprite.Sprite):
             all_sprites.add(bullet)
             enemy_shoot_sound.play()
 
+
 class StraightEnemy(Enemy):
-    pass  # Bergerak lurus
+    pass
+
 
 class ZigzagEnemy(Enemy):
     def __init__(self, image, speed, shoot_interval, bullet_img=None):
@@ -128,6 +132,7 @@ class ZigzagEnemy(Enemy):
             self.zigzag_timer = 0
         self.rect.y += self.direction * self.zigzag_speed
 
+
 class SinusoidalEnemy(Enemy):
     def __init__(self, image, speed, shoot_interval, bullet_img=None):
         super().__init__(image, speed, shoot_interval, bullet_img)
@@ -137,6 +142,31 @@ class SinusoidalEnemy(Enemy):
 
     def move_pattern(self):
         self.rect.y = self.initial_y + self.amplitude * math.sin(self.frequency * self.timer)
+
+
+# Kelas baru untuk asteroid yang muncul di mana saja secara random
+class RandomAsteroid(Enemy):
+    def __init__(self, image, speed):
+        super().__init__(image, speed, None)
+        # Tetapkan posisi awal secara random di mana saja pada layar
+        self.rect.x = random.randint(50, widthScreen - 50)
+        self.rect.y = random.randint(50, heightScreen - 50)
+        # Tentukan arah gerakan secara random
+        self.direction = pygame.math.Vector2(random.uniform(-1, 1), random.uniform(-1, 1))
+        self.direction.normalize_ip()
+
+    def update(self):
+        # Gerakkan asteroid berdasarkan arah yang telah ditentukan
+        self.rect.x += self.direction.x * self.speed
+        self.rect.y += self.direction.y * self.speed
+        self.timer += 1
+
+        # Jika asteroid mencapai tepi layar, balikkan arahnya
+        if self.rect.left < 0 or self.rect.right > widthScreen:
+            self.direction.x *= -1
+        if self.rect.top < 0 or self.rect.bottom > heightScreen:
+            self.direction.y *= -1
+
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction, image):
@@ -154,6 +184,7 @@ class Bullet(pygame.sprite.Sprite):
         if self.rect.right < 0 or self.rect.left > widthScreen or self.rect.bottom < 0 or self.rect.top > heightScreen:
             self.kill()
 
+
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y, image):
         super().__init__()
@@ -165,6 +196,7 @@ class Explosion(pygame.sprite.Sprite):
         self.timer += 1
         if self.timer >= 30:
             self.kill()
+
 
 # Grup sprite
 all_sprites = pygame.sprite.Group()
@@ -190,9 +222,14 @@ levels = [
 # Variabel permainan
 current_level = 0
 score = 0
-lives = 3
+lives = 10
 game_state = "playing"
 background_x = 0
+
+# Variabel untuk spawn asteroid secara acak
+asteroid_spawn_timer = 0
+asteroid_spawn_interval = random.randint(3000, 5000)  # Interval acak antara 3-5 detik
+
 
 # Fungsi untuk memulai level baru
 def start_level(level_index):
@@ -206,7 +243,9 @@ def start_level(level_index):
             elif enemy_type["type"] == "missile_craft":
                 enemies_to_spawn.append(ZigzagEnemy(enemy_missile_craft_img, 3, 1500, missile_img))
             elif enemy_type["type"] == "asteroid":
-                enemies_to_spawn.append(SinusoidalEnemy(asteroid_img, 2, None))  # Tidak menembak
+                # Gunakan RandomAsteroid bukan SinusoidalEnemy
+                enemies_to_spawn.append(RandomAsteroid(asteroid_img, 2))
+
 
 # Mulai level pertama
 start_level(0)
@@ -225,13 +264,12 @@ while running:
                     player_ship.shoot()
             elif game_state == "game_over" or game_state == "victory":
                 if event.key == pygame.K_r:
-                    # Mulai ulang permainan
                     score = 0
-                    lives = 3
+                    lives = 10
                     current_level = 0
                     start_level(0)
                     game_state = "playing"
-                    background_music.play(-1)  # Putar ulang musik latar
+                    background_music.play(-1)
                 elif event.key == pygame.K_q:
                     running = False
 
@@ -239,15 +277,25 @@ while running:
         # Perbarui posisi kapal pemain
         player_ship.update()
 
-        # Munculkan musuh
+        # Munculkan musuh dari level
         current_time = pygame.time.get_ticks()
         if enemies_to_spawn and current_time - spawn_timer >= spawn_interval:
             enemy = enemies_to_spawn.pop(0)
-            enemy.rect.x = widthScreen
-            enemy.rect.y = random.randint(50, heightScreen - 50)
+            if not isinstance(enemy, RandomAsteroid):  # Jika bukan RandomAsteroid, atur posisi di kanan layar
+                enemy.rect.x = widthScreen
+                enemy.rect.y = random.randint(50, heightScreen - 50)
             enemies.add(enemy)
             all_sprites.add(enemy)
             spawn_timer = current_time
+
+        # Munculkan asteroid secara acak
+        asteroid_spawn_timer += clock.get_time()
+        if asteroid_spawn_timer >= asteroid_spawn_interval:
+            asteroid = RandomAsteroid(asteroid_img, 2)  # Gunakan RandomAsteroid
+            enemies.add(asteroid)
+            all_sprites.add(asteroid)
+            asteroid_spawn_timer = 0
+            asteroid_spawn_interval = random.randint(3000, 5000)  # Interval acak baru
 
         # Perbarui semua sprite
         all_sprites.update()
@@ -267,7 +315,7 @@ while running:
                 all_sprites.add(explosion)
                 explosion_sound.play()
                 game_state = "game_over"
-                background_music.stop()  # Hentikan musik latar
+                background_music.stop()
                 shoot_sound.stop()
                 enemy_shoot_sound.stop()
                 explosion_sound.stop()
@@ -280,7 +328,7 @@ while running:
                 all_sprites.add(explosion)
                 explosion_sound.play()
                 game_state = "game_over"
-                background_music.stop()  # Hentikan musik latar
+                background_music.stop()
                 shoot_sound.stop()
                 enemy_shoot_sound.stop()
                 explosion_sound.stop()
@@ -293,7 +341,7 @@ while running:
                 start_level(current_level)
             else:
                 game_state = "victory"
-                background_music.stop()  # Hentikan musik latar
+                background_music.stop()
                 shoot_sound.stop()
                 enemy_shoot_sound.stop()
                 explosion_sound.stop()
@@ -316,7 +364,7 @@ while running:
         score_text = font.render(f"Score: {score}", True, (255, 255, 255))
         screen.blit(score_text, (10, 10))
         lives_text = font.render(f"Lives: {lives}", True, (255, 255, 255))
-        screen.blit(lives_text, (widthScreen - 100, 10))
+        screen.blit(lives_text, (widthScreen - 120, 10))
 
     elif game_state == "game_over":
         screen.fill((0, 0, 0))
