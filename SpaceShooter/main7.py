@@ -10,7 +10,7 @@ class Display:
     pygame.display.set_caption("Enhanced Space Shooter")
     clock = pygame.time.Clock()
 
-    background = pygame.image.load("background.png")
+    background = pygame.image.load("background1.png")
     font = pygame.font.Font("SHPinscher-Regular.otf", 35)
 
     spaceship = pygame.image.load("space_ship.png")

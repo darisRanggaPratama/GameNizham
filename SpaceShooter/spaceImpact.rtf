@@ -1,0 +1,109 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2709
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww21240\viewh19020\viewkind0
+\deftab720
+\pard\tx940\tx1440\pardeftab720\li1440\fi-1440\partightenfactor0
+
+\f0\fs28 \cf0 \expnd0\expndtw0\kerning0
+\outl0\strokewidth0 \strokec2 Untuk membuat ulang game Space Impact dari Nokia 3310 menggunakan PyGame, kita perlu mempertimbangkan tiga aspek utama: aset, algoritma, dan alur proses. Berikut adalah penjelasan rinci untuk masing-masing aspek.\
+\
+Aset yang Diperlukan\
+Aset adalah elemen visual, audio, dan teks yang digunakan untuk membangun dunia permainan. Berikut adalah aset-aset yang diperlukan:\
+\
+1. Grafis\
+1.1.Sprite Kapal Pemain: Gambar kapal yang dikendalikan oleh pemain.\
+1.2.Sprite Musuh: Berbagai jenis musuh dengan desain yang berbeda, seperti kapal musuh atau asteroid.\
+1.3.Sprite Peluru: Gambar peluru yang ditembakkan oleh pemain dan musuh.\
+1.4.Latar Belakang: beberapa gambar latar belakang luar angkasa yang bergerak untuk memberikan efek scrolling.\
+1.5.Efek Ledakan: Animasi ledakan saat kapal musuh atau pemain hancur.\
+\
+2. Suara\
+2.1.Efek Suara Tembakan: Suara saat pemain atau musuh menembak peluru.\
+2.2.Efek Suara Ledakan: Suara saat kapal musuh atau pemain hancur.\
+2.3.Musik Latar.\
+\
+3. Font\
+3.1.Font untuk Skor dan Nyawa: Font khusus untuk menampilkan skor pemain dan jumlah nyawa yang tersisa di layar.\
+\
+Algoritma yang Diperlukan\
+Algoritma mengatur logika permainan, termasuk gerakan, interaksi, dan mekanisme permainan. Berikut adalah algoritma utama yang diperlukan:\
+\
+1. Gerakan Kapal Pemain\
+1.1.Menggunakan input dari mouse untuk menggerakkan kapal ke kiri, kanan, atas, bawah, kiri atas, kiri bawah, kanan atas dan kanan bawah.\
+1.2.Membatasi gerakan kapal agar tidak keluar dari batas layar.\
+\
+2. Gerakan Musuh\
+2.1.Musuh bergerak dari kanan ke kiri layar dengan pola tertentu, seperti:\
+2.1.1.Gerakan lurus.\
+2.1.2.Gerakan zig-zag.\
+2.1.3.Gerakan sinusoidal (gelombang).\
+2.2.Mengatur kecepatan dan frekuensi kemunculan musuh berdasarkan level kesulitan.\
+\
+3. Deteksi Tabrakan\
+3.1.Mendeteksi tabrakan antara:\
+3.1.1.Peluru pemain dan musuh (musuh hancur, skor bertambah).\
+3.1.2.Kapal pemain dan musuh atau peluru musuh (nyawa pemain berkurang).\
+3.2.Jika diperlukan, mendeteksi tabrakan antara kapal pemain dan tepi layar untuk membatasi gerakan.\
+\
+4. Penembakan\
+4.1.Mengatur frekuensi tembakan pemain, pemain hanya dapat menembak setiap 0,5 detik.\
+4.2.Mengatur pola tembakan musuh, seperti:\
+4.2.1.Tembakan lurus ke arah pemain.\
+4.2.2.Tembakan yang mengikuti posisi pemain.\
+\
+5. Skor dan Nyawa\
+5.1.Menambah skor saat musuh dihancurkan, +10 poin per musuh.\
+5.2.Mengurangi nyawa saat kapal pemain tertabrak musuh atau peluru musuh.\
+5.3.Mengakhiri permainan saat nyawa habis atau musuh habis.\
+\
+6. Level dan Kesulitan\
+6.1.Meningkatkan kesulitan di level yang lebih tinggi dengan:\
+6.1.1.Menambah kecepatan gerakan musuh.\
+6.1.2.Meningkatkan frekuensi kemunculan musuh.\
+6.1.3.Menambahkan jenis musuh baru dengan pola gerakan atau tembakan yang lebih sulit.\
+\
+Alur Proses\
+Alur proses mengatur bagaimana permainan dijalankan dari awal hingga akhir. Berikut adalah langkah-langkahnya:\
+\
+1. Inisialisasi Game\
+1.1.Menginisialisasi PyGame dan membuat jendela game dengan ukuran 800x600 piksel.\
+1.2.Memuat semua aset yang diperlukan, termasuk:\
+1.2.1.Gambar sprite (kapal, musuh, peluru, latar belakang, ledakan).\
+1.2.2.Efek suara dan musik latar.\
+1.2.3.Font untuk skor dan nyawa.\
+\
+2. Loop Utama Game\
+Loop utama adalah inti dari permainan yang terus berjalan hingga permainan selesai. Loop ini terdiri dari langkah-langkah berikut:\
+\
+2.1.Input Handling:\
+2.1.1.Membaca input dari pemain, seperti gerakan kapal dari mouse dan tembakan (tombol spasi).\
+\
+2.2.Update Game State:\
+2.2.1.Menggerakkan kapal pemain berdasarkan input.\
+2.2.2.Menggerakkan musuh dan peluru di layar.\
+2.2.3.Memeriksa tabrakan dan memperbarui skor atau nyawa sesuai kejadian.\
+2.2.4.Memunculkan musuh baru pada interval tertentu, setiap 2 detik.\
+\
+2.3.Render:\
+2.3.1.Menggambar latar belakang yang bergerak untuk efek scrolling.\
+2.3.2.Menggambar kapal pemain, musuh, dan peluru di layar.\
+2.3.3.Menampilkan skor di sudut kiri atas layar dan nyawa pemain di sudut kanan atas layar.\
+\
+2.4.Delay:\
+Mengatur frame rate, 60 FPS agar permainan berjalan pada kecepatan yang konsisten.\
+\
+3. Game Over\
+3.1.Jika nyawa pemain habis atau musuh habis, permainan berakhir.\
+3.2.Menampilkan layar game over dengan:\
+3.2.1.Skor akhir pemain.\
+3.2.2.Opsi untuk memulai ulang permainan atau keluar.\
+\
+\
+Kesimpulan\
+Untuk membuat ulang game Space Impact menggunakan PyGame, kita perlu:\
+\
+1.Aset: Sprite kapal, musuh, peluru, latar belakang, efek ledakan, suara tembakan, ledakan, musik latar, dan font untuk skor/nyawa.\
+2.Algoritma: Gerakan kapal dan musuh, deteksi tabrakan, mekanisme tembakan, pengaturan skor/nyawa, dan peningkatan kesulitan.\
+3.Alur Proses: Inisialisasi game, loop utama (input, update, render), dan layar game over.}
